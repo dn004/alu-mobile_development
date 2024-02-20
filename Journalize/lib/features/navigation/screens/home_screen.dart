@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:journalize/features/navigation/screens/schedule_screen.dart';
+import 'package:journalize/features/authentication/authentication.dart';
+import 'package:journalize/features/navigation/widgets/entry_page.dart';
 import 'package:journalize/utils/cards.dart';
+import 'package:journalize/utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.title}) : super(key: key);
@@ -13,6 +15,10 @@ class HomeScreen extends StatefulWidget {
 
 class _MyHomePageState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  final pages = [
+    Entries(),
+    Text("Mood")
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -22,7 +28,7 @@ class _MyHomePageState extends State<HomeScreen> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ScheduleScreen()),
+        MaterialPageRoute(builder: (context) => Authentication()),
       );
     }
   }
@@ -38,16 +44,14 @@ class _MyHomePageState extends State<HomeScreen> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: VerticalCardList(),
+      body: pages[_selectedIndex],
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.black,
-              ),
-              child: Text('Get It Done', style: TextStyle(color: Colors.white)),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: const Text("Journalize"),
             ),
             ListTile(
               title: Text('Home'),
@@ -57,49 +61,46 @@ class _MyHomePageState extends State<HomeScreen> {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              title: Text('Tasks'),
-              selected: _selectedIndex == 1,
-              onTap: () {
-                _onItemTapped(1);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Settings'),
-              selected: _selectedIndex == 2,
-              onTap: () {
-                _onItemTapped(2);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('About'),
-              selected: _selectedIndex == 3,
-              onTap: () {
-                _onItemTapped(3);
-                Navigator.pop(context);
-              },
-            ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Theme.of(context).colorScheme.secondary,
-        unselectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contacts_outlined),
-            label: 'Plan',
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+        ),
+        child: SafeArea(
+          child: Container(
+            width: MyConstants.screenWidth(context),
+            height: 100,
+            margin: const EdgeInsets.only(bottom: 10.0),
+            color: Colors.transparent,
+  
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              selectedItemColor: Colors.amber,
+              unselectedItemColor: Colors.grey,
+              iconSize: 30,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.book),
+                  label: 'Entries',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.pie_chart_outline_rounded),
+                  label: 'Mood',
+                ),
+            
+              ],
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.donut_large_outlined),
-            label: 'Mood',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        ),
       ),
     );
   }
