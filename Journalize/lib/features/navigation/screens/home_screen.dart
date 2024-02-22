@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:journalize/features/authentication/authentication.dart';
 import 'package:journalize/features/navigation/widgets/entry_page.dart';
-import 'package:journalize/utils/cards.dart';
+import 'package:journalize/features/navigation/widgets/mood_page.dart';
+import 'package:journalize/features/navigation/widgets/new_entry.dart';
 import 'package:journalize/utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _MyHomePageState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final pages = [
     Entries(),
-    Text("Mood")
+    MoodPage()
   ];
 
   void _onItemTapped(int index) {
@@ -28,7 +29,7 @@ class _MyHomePageState extends State<HomeScreen> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Authentication()),
+        MaterialPageRoute(builder: (context) => const Authentication()),
       );
     }
   }
@@ -37,24 +38,23 @@ class _MyHomePageState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          widget.title,
-          style: TextStyle(color: Colors.white),
-        ),
+        backgroundColor: Colors.white,
+        title: const Icon(Icons.book_outlined)
       ),
-      body: pages[_selectedIndex],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: pages[_selectedIndex],
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: const Text("Journalize"),
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text("Journalize"),
             ),
             ListTile(
-              title: Text('Home'),
+              title: const Text('Journalize'),
               selected: _selectedIndex == 0,
               onTap: () {
                 _onItemTapped(0);
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+       decoration: const BoxDecoration(
           color: Colors.transparent,
         ),
         child: SafeArea(
@@ -101,6 +101,12 @@ class _MyHomePageState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const NewEntry()),);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
