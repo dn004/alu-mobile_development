@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196671913726",
+    "project_id": "journalize-653a3",
+    "storage_bucket": "journalize-653a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196671913726:android:86e1282949c49b579eafaf",
+        "android_client_info": {
+          "package_name": "com.example.journalize"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAejMtfVituaMIXIEHncvbuoWvd7aThv84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
