@@ -21,15 +21,9 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -59,5 +53,23 @@ class DefaultFirebaseOptions {
     projectId: 'journalize-653a3',
     authDomain: 'journalize-653a3.firebaseapp.com',
     storageBucket: 'journalize-653a3.appspot.com',
+    measurementId: 'G-C8TMDYF1GR',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAejMtfVituaMIXIEHncvbuoWvd7aThv84',
+    appId: '1:196671913726:android:86e1282949c49b579eafaf',
+    messagingSenderId: '196671913726',
+    projectId: 'journalize-653a3',
+    storageBucket: 'journalize-653a3.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDKXT2-wxus4ti-exDWEHYWS-iVgWY2yvY',
+    appId: '1:196671913726:ios:e04ac065792c046a9eafaf',
+    messagingSenderId: '196671913726',
+    projectId: 'journalize-653a3',
+    storageBucket: 'journalize-653a3.appspot.com',
+    iosBundleId: 'com.example.journalize',
   );
 }

@@ -16,10 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _MyHomePageState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final pages = [
-    Entries(),
-    MoodPage()
-  ];
+  final pages = [Entries(), MoodPage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -38,9 +35,8 @@ class _MyHomePageState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Icon(Icons.book_outlined)
-      ),
+          backgroundColor: Colors.white,
+          title: const Icon(Icons.book_outlined)),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: pages[_selectedIndex],
@@ -65,16 +61,14 @@ class _MyHomePageState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-       decoration: const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.transparent,
         ),
         child: SafeArea(
           child: Container(
             width: MyConstants.screenWidth(context),
             height: 100,
-            margin: const EdgeInsets.only(bottom: 10.0),
             color: Colors.transparent,
-  
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
@@ -90,7 +84,6 @@ class _MyHomePageState extends State<HomeScreen> {
                   icon: Icon(Icons.pie_chart_outline_rounded),
                   label: 'Mood',
                 ),
-            
               ],
               currentIndex: _selectedIndex,
               onTap: (index) {
@@ -103,8 +96,11 @@ class _MyHomePageState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const NewEntry()),);
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewEntry()),
+          );
         },
         child: const Icon(Icons.add),
       ),
