@@ -130,7 +130,7 @@ class _EntriesState extends State<Entries> {
                           child: ListBody(
                             children: <Widget>[
                               ListTile(
-                                //UPDATING DATA FROM FIREBASE
+                                //UPDATING DATA FROM FIRESTORE
                                 leading: Icon(Icons.edit),
                                 title: Text('Edit Entry'),
                                 onTap: () {
@@ -147,7 +147,7 @@ class _EntriesState extends State<Entries> {
                                 },
                               ),
                               ListTile(
-                                //DELETING DATA FROM FIREBASE
+                                //DELETING DATA FROM FIRESTORE
                                 leading: Icon(Icons.delete),
                                 title: Text('Delete Entry'),
                                 onTap: () {

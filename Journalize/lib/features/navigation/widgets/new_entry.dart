@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class NewEntry extends StatelessWidget {
   const NewEntry({Key? key});
@@ -81,6 +81,7 @@ class NewEntry extends StatelessWidget {
                 User? user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
                   try {
+                    // Creating data or Sending data to firestore.
                     await FirebaseFirestore.instance.collection('Entries').add({
                       'title': titleController.text,
                       'photoURL': photoURLController.text,
