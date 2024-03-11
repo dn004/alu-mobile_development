@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../utils/next_screen.dart';
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({super.key});
+  const RegisterForm({Key? key});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -24,9 +24,6 @@ class _RegisterFormState extends State<RegisterForm>
   late AuthStateProvider authStateProvider;
 
   bool _isLoading = false;
-  final db = FirebaseFirestore.instance;
-  bool _hasError = false;
-  String _error = '';
 
   @override
   void initState() {
@@ -39,8 +36,6 @@ class _RegisterFormState extends State<RegisterForm>
     super.dispose();
     _controller.dispose();
   }
-
-  bool isLoggedIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +51,9 @@ class _RegisterFormState extends State<RegisterForm>
         _isLoading = true;
       });
       if (email.isEmpty || password.isEmpty || username.isEmpty) {
-        setState(() {
-          _isLoading = false;
-        });
-        _hasError = false;
-        _error = 'Fill in missing';
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Fill in missing fields'),
+        ));
         setState(() {
           _isLoading = false;
         });
@@ -72,7 +65,7 @@ class _RegisterFormState extends State<RegisterForm>
             _isLoading = false;
           });
           if (authP.currentUser != null) {
-            await db.collection("users").add({
+            await FirebaseFirestore.instance.collection("users").add({
               "name": username,
               "email": authP.currentUser?.email,
               "uid": authP.currentUser?.uid,
@@ -81,21 +74,11 @@ class _RegisterFormState extends State<RegisterForm>
 
             context.read<AuthStateProvider>().setAuthState(authP.currentUser);
             handleAfterSignUp();
-            if (authStateProvider.currentUser?.email != null) {
-              setState(() {
-                _isLoading = false;
-              });
-              authP.saveDataToFireStore;
-              handleAfterSignUp();
-
-            }
-
-            // Print user details
           }
-
-          handleAfterSignUp();
         } on FirebaseAuthException catch (e) {
-          String errorMessage;
+          String errorMessage =
+              'An unexpected error occurred. Please try again.';
+
           setState(() {
             _isLoading = false;
           });
@@ -108,23 +91,19 @@ class _RegisterFormState extends State<RegisterForm>
               errorMessage = 'Incorrect password. Please try again.';
               break;
             case 'invalid-email':
-              errorMessage = 'Incorrect email. Please try again.';
-
-            default:
-              errorMessage = 'Incorrect password. Please try again.';
+              errorMessage = 'Invalid email. Please try again.';
               break;
           }
-          _hasError = false;
-          _error = errorMessage;
-        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(errorMessage),
+          ));
+        } catch (_) {
           setState(() {
             _isLoading = false;
           });
-          setState(() {
-            _isLoading = false;
-          });
-          _hasError = true;
-          _error = 'unexpected error has occurred. Please try again';
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('An unexpected error occurred. Please try again.'),
+          ));
         }
       }
     }
@@ -155,7 +134,7 @@ class _RegisterFormState extends State<RegisterForm>
               const SizedBox(height: 8.0),
               TextField(
                 decoration: InputDecoration(
-                  hintText: _hasError ? _error : 'Username',
+                  hintText: 'Username',
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.white),
@@ -171,7 +150,7 @@ class _RegisterFormState extends State<RegisterForm>
               ),
               TextField(
                 decoration: InputDecoration(
-                  hintText: _hasError ? _error : 'Email',
+                  hintText: 'Email',
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.white),
@@ -187,7 +166,7 @@ class _RegisterFormState extends State<RegisterForm>
               ),
               TextField(
                 decoration: InputDecoration(
-                  hintText: _hasError ? _error : "Password",
+                  hintText: "Password",
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.white),
@@ -205,27 +184,41 @@ class _RegisterFormState extends State<RegisterForm>
               const SizedBox(height: 8.0),
               const SizedBox(height: 8.0),
               const SizedBox(height: 8.0),
-              Stack(children: [
-                MaterialButton(
-                    onPressed: handleSingUp, child: Text("Register")),
-                Visibility(
-                  visible: _isLoading,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: MyConstants.secondaryColor,
-                    ),
-                    height: 76,
-                    width: MyConstants.screenWidth(context),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.amber,
-                        strokeWidth: 5,
+              Center(
+                child: Stack(
+                  children: [
+                    ElevatedButton(
+                      onPressed: handleSingUp,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: MyConstants.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 20,
+                        ),
                       ),
+                      child: const Text("Register"),
                     ),
-                  ),
-                )
-              ]),
+                    if (_isLoading)
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: MyConstants.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

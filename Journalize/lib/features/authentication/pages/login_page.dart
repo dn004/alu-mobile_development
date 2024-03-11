@@ -15,69 +15,14 @@ class LogInForm extends StatefulWidget {
 }
 
 class _LogInFormState extends State<LogInForm> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool isEmailPasswordLoading = false;
+  bool isGoogleLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.read<AuthStateProvider>();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    bool isLoading = false;
-    String error = '';
-
-    Future<void> handleEmailAndPasswordSignIn() async {
-      final email = emailController.text.trim();
-      final password = passwordController.text.trim();
-
-      if (email.isEmpty || password.isEmpty) {
-        setState(() {
-          error = 'Email and Password Required!';
-          print(error);
-        });
-      }
-
-      try {
-        setState(() {
-          isLoading = true;
-        });
-
-        // Proceed with sign-in
-        await authProvider.signInWithEmailAndPassword(email, password);
-        print(authProvider.currentUser!.email);
-        if (authProvider.currentUser != null) {
-          handleAfterLogin(context);
-        } else {
-          setState(() {
-            isLoading = false;
-            error = 'wrong password or email';
-            print(error);
-          });
-        }
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          isLoading = false;
-          switch (e.code) {
-            case 'user-not-found':
-              error = 'User not found. Please check your email.';
-              break;
-            case 'wrong-password':
-              error = 'Incorrect password. Please try again.';
-              break;
-            case 'invalid-email':
-              error = 'Invalid email. Please try again.';
-              break;
-            default:
-              error = 'An unexpected error occurred. Please try again.';
-              break;
-          }
-          print(error);
-        });
-      } catch (_) {
-        setState(() {
-          isLoading = false;
-          error = ' Please try again.';
-          print("error: $_");
-        });
-      }
-    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -131,11 +76,6 @@ class _LogInFormState extends State<LogInForm> {
             obscureText: true,
           ),
           const SizedBox(height: 8),
-          if (error.isNotEmpty)
-            Text(
-              error,
-              style: TextStyle(color: Colors.red),
-            ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -145,33 +85,141 @@ class _LogInFormState extends State<LogInForm> {
               ),
             ],
           ),
-          Stack(
-            children: [
-              MaterialButton(
-                onPressed: handleEmailAndPasswordSignIn,
-                child: const Text("Sign in"),
-              ),
-              if (isLoading)
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: MyConstants.secondaryColor,
-                  ),
-                  height: 76,
-                  width: MyConstants.screenWidth(context),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.brown,
-                      strokeWidth: 5,
+          const SizedBox(height: 16),
+          Center(
+            child: Stack(
+              children: [
+                ElevatedButton(
+                  onPressed: () => handleEmailAndPasswordSignIn(context),
+                  child: const Text("Sign in"),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: MyConstants.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 20,
                     ),
                   ),
                 ),
-            ],
+                if (isEmailPasswordLoading)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: MyConstants.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
+          Center(
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                setState(() {
+                  isGoogleLoading = true;
+                });
+                await authProvider.signInWithGoogle();
+                setState(() {
+                  isGoogleLoading = false;
+                });
+              },
+              icon: Image.asset(
+                'assets/images/google.png',
+                height: 24,
+                width: 24,
+              ),
+              label: Text('Sign in with Google'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 20,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void handleEmailAndPasswordSignIn(BuildContext context) async {
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Email and Password Required!"),
+      ));
+      return;
+    }
+
+    setState(() {
+      isEmailPasswordLoading = true;
+    });
+
+    try {
+      await context
+          .read<AuthStateProvider>()
+          .signInWithEmailAndPassword(email, password);
+      if (context.read<AuthStateProvider>().currentUser != null) {
+        handleAfterLogin(context);
+      } else {
+        setState(() {
+          isEmailPasswordLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Wrong password or email"),
+        ));
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        isEmailPasswordLoading = false;
+      });
+      switch (e.code) {
+        case 'user-not-found':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("User not found. Please check your email."),
+          ));
+          break;
+        case 'wrong-password':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Incorrect password. Please try again."),
+          ));
+          break;
+        case 'invalid-email':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Invalid email. Please try again."),
+          ));
+          break;
+        default:
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("An unexpected error occurred. Please try again."),
+          ));
+          break;
+      }
+    } catch (_) {
+      setState(() {
+        isEmailPasswordLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Please try again."),
+      ));
+    }
   }
 
   void handleAfterLogin(BuildContext context) {

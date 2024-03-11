@@ -33,76 +33,78 @@ class _MyHomePageState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Icon(Icons.book_outlined)),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: pages[_selectedIndex],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text("Journalize"),
-            ),
-            ListTile(
-              title: const Text('Journalize'),
-              selected: _selectedIndex == 0,
-              onTap: () {
-                _onItemTapped(0);
-                Navigator.pop(context);
-              },
-            ),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: const Icon(Icons.book_outlined)),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: pages[_selectedIndex],
         ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Text("Journalize"),
+              ),
+              ListTile(
+                title: const Text('Journalize'),
+                selected: _selectedIndex == 0,
+                onTap: () {
+                  _onItemTapped(0);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
-        child: SafeArea(
-          child: Container(
-            width: MyConstants.screenWidth(context),
-            height: 100,
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
             color: Colors.transparent,
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
-              selectedItemColor: Colors.amber,
-              unselectedItemColor: Colors.grey,
-              iconSize: 30,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.book),
-                  label: 'Entries',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.pie_chart_outline_rounded),
-                  label: 'Mood',
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              onTap: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
+          ),
+          child: SafeArea(
+            child: Container(
+              width: MyConstants.screenWidth(context),
+              height: 100,
+              color: Colors.transparent,
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                selectedItemColor: Colors.amber,
+                unselectedItemColor: Colors.grey,
+                iconSize: 30,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.book),
+                    label: 'Entries',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.pie_chart_outline_rounded),
+                    label: 'Mood',
+                  ),
+                ],
+                currentIndex: _selectedIndex,
+                onTap: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+              ),
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NewEntry()),
-          );
-        },
-        child: const Icon(Icons.add),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewEntry()),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }

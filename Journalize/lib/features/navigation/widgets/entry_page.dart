@@ -75,8 +75,8 @@ class _EntriesState extends State<Entries> {
                                     child: SizedBox(
                                       width: MyConstants.screenWidth(context),
                                       child: Image.network(
-                                        "${entries[index]["imageUrl"]}",
-                                        fit: BoxFit.fill,
+                                        "${entries[index]["photoURL"]}",
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),

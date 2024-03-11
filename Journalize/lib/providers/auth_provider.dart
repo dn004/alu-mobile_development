@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthStateProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
@@ -8,19 +9,17 @@ class AuthStateProvider extends ChangeNotifier {
   bool _hasError = false;
 
   String? _errorCode;
-  //instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   User? _currentUser;
   late final String? _userEmail;
   late final String? _userPassword;
 
-  //usercredentials
   String? _email;
   String? _name;
   String? _uid;
 
-  //Getters here!
   bool get signedState => _isSignedUp;
   bool get hasError => _hasError;
   bool get isloggedIn => _isLoggedIn;
@@ -33,7 +32,7 @@ class AuthStateProvider extends ChangeNotifier {
   String? get uid => _uid;
 
   AuthStateProvider() {
-    // checkAuthState();
+    checkAuthState();
   }
 
   Future<void> checkAuthState() async {
@@ -63,12 +62,6 @@ class AuthStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void toggleAuthState(User? user) {
-  //   _currentUser = user;
-  //   _isLoggedIn = user != null;
-  //   notifyListeners();
-  // }
-
   void toggleSigned() {
     _isSignedUp = !_isSignedUp;
     notifyListeners();
@@ -90,108 +83,83 @@ class AuthStateProvider extends ChangeNotifier {
       setAuthState(_currentUser);
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case "invalid-email":
-          _hasError = true;
-          _errorCode = e.message;
-          break;
-        case "account-exists-with-different-credentials":
-          _errorCode = "Account already Exists";
-          _hasError = true;
-          notifyListeners();
-          break;
-        case "null":
-          _hasError = true;
-          _errorCode = "unexpected Error please try again later";
-          notifyListeners();
-          break;
-        default:
-          _errorCode = e.message;
-          _hasError = true;
-          notifyListeners();
-          break;
-      }
+      handleAuthException(e);
     }
   }
 
   Future<void> signInWithEmailAndPassword(userEmail, userPassword) async {
     try {
-      _currentUser = FirebaseAuth.instance.currentUser;
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: userEmail, password: userPassword);
+      _currentUser = userCredential.user;
       _email = _currentUser!.email;
       _name = _currentUser!.displayName;
       _uid = _currentUser!.uid;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case "invalid-email":
-          _hasError = true;
-          _errorCode = e.message;
-          notifyListeners();
-          break;
-        case "INVALID_LOGIN_CREDENTIALS":
-          _hasError = true;
-          _errorCode = "invalid credentials!";
-          notifyListeners();
-          break;
-        case "user-not-found":
-          _hasError = true;
-          _errorCode = e.code;
-          notifyListeners();
-          break;
-        case "account-exists-with-different-credentials":
-          _errorCode = "Account already Exists";
-          _hasError = true;
-          notifyListeners();
-          break;
-        case "null":
-          _hasError = true;
-          _errorCode = "unexpected Error please try again later";
-          notifyListeners();
-          break;
-        default:
-          _errorCode = e.message;
-          _hasError = true;
-          notifyListeners();
-          break;
+      handleAuthException(e);
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        final UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
+        _currentUser = userCredential.user;
+        _email = _currentUser!.email;
+        _name = _currentUser!.displayName;
+        _uid = _currentUser!.uid;
+        notifyListeners();
       }
+    } catch (e) {
+      print('Error signing in with Google: $e');
     }
   }
 
-  Future<bool> checkUserExists() async {
-    DocumentSnapshot snap =
-        await FirebaseFirestore.instance.collection('úsers').doc(_uid).get();
-    if (snap.exists) {
-      return true;
+  Future<void> handleAuthException(FirebaseAuthException e) async {
+    String errorMessage = 'An unexpected error occurred. Please try again.';
+    switch (e.code) {
+      case "invalid-email":
+        errorMessage = e.message!;
+        break;
+      case "INVALID_LOGIN_CREDENTIALS":
+        errorMessage = 'Invalid credentials!';
+        break;
+      case "user-not-found":
+        errorMessage = e.code;
+        break;
+      default:
+        errorMessage = e.message!;
+        break;
     }
-    return false;
+    _errorCode = errorMessage;
+    _hasError = true;
+    notifyListeners();
   }
 
-  Future getUserDataFromFireStore() async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot snapshot) => {
-              _uid = snapshot["uid"],
-              _name = snapshot["name"],
-              _email = snapshot["email"],
-            });
-  }
-
-  Future saveDataToFireStore() async {
-    final DocumentReference r =
-        FirebaseFirestore.instance.collection("users").doc(uid);
-    await r.set({
-      "name": _name,
-      "email": _email,
-      "uid": _uid,
-    });
+  Future<void> getUserDataFromFireStore() async {
+    try {
+      final DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      _uid = snapshot["uid"];
+      _name = snapshot["name"];
+      _email = snapshot["email"];
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-
       _isLoggedIn = false;
       notifyListeners();
     } catch (e) {
