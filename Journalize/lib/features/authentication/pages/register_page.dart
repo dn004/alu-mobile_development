@@ -133,6 +133,7 @@ class _RegisterFormState extends State<RegisterForm>
               ),
               const SizedBox(height: 8.0),
               TextField(
+                key:const ValueKey("userNameTextField"),
                 decoration: InputDecoration(
                   hintText: 'Username',
                   hintStyle: TextStyle(color: Colors.grey[500]),
@@ -149,6 +150,7 @@ class _RegisterFormState extends State<RegisterForm>
                 controller: _usernameController,
               ),
               TextField(
+                key:const ValueKey("emailTextField"),
                 decoration: InputDecoration(
                   hintText: 'Email',
                   hintStyle: TextStyle(color: Colors.grey[500]),
@@ -165,6 +167,7 @@ class _RegisterFormState extends State<RegisterForm>
                 controller: _emailController,
               ),
               TextField(
+                key:const ValueKey("passwordTextField"),
                 decoration: InputDecoration(
                   hintText: "Password",
                   hintStyle: TextStyle(color: Colors.grey[500]),

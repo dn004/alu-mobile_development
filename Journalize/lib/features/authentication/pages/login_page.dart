@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:journalize/features/navigation/screens/home_screen.dart';
@@ -29,7 +31,7 @@ class _LogInFormState extends State<LogInForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Journalize",
             style: TextStyle(fontSize: 26),
           ),
@@ -40,6 +42,7 @@ class _LogInFormState extends State<LogInForm> {
           ),
           const SizedBox(height: 16),
           TextField(
+            key: const ValueKey("emailTextField"),
             decoration: InputDecoration(
               hintText: "Email",
               hintStyle: TextStyle(color: Colors.grey[500]),
@@ -58,6 +61,7 @@ class _LogInFormState extends State<LogInForm> {
           ),
           const SizedBox(height: 16),
           TextField(
+            key: const ValueKey("passwordTextField"),
             decoration: InputDecoration(
               hintText: "Password",
               hintStyle: TextStyle(color: Colors.grey[500]),
@@ -80,6 +84,7 @@ class _LogInFormState extends State<LogInForm> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
+                key: const ValueKey("forgot_password_button"),
                 onPressed: () {},
                 child: const Text("Forgot Password?"),
               ),
@@ -91,7 +96,6 @@ class _LogInFormState extends State<LogInForm> {
               children: [
                 ElevatedButton(
                   onPressed: () => handleEmailAndPasswordSignIn(context),
-                  child: const Text("Sign in"),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: MyConstants.primaryColor,
@@ -103,6 +107,7 @@ class _LogInFormState extends State<LogInForm> {
                       horizontal: 20,
                     ),
                   ),
+                  child: const Text("Sign in"),
                 ),
                 if (isEmailPasswordLoading)
                   Positioned.fill(
@@ -124,6 +129,7 @@ class _LogInFormState extends State<LogInForm> {
           const SizedBox(height: 16),
           Center(
             child: ElevatedButton.icon(
+              key: const ValueKey("googleSignInButtonKey"),
               onPressed: () async {
                 setState(() {
                   isGoogleLoading = true;
@@ -138,7 +144,7 @@ class _LogInFormState extends State<LogInForm> {
                 height: 24,
                 width: 24,
               ),
-              label: Text('Sign in with Google'),
+              label: const Text('Sign in with Google'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
                 backgroundColor: Colors.white,
@@ -182,7 +188,7 @@ class _LogInFormState extends State<LogInForm> {
         setState(() {
           isEmailPasswordLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Wrong password or email"),
         ));
       }
@@ -192,22 +198,22 @@ class _LogInFormState extends State<LogInForm> {
       });
       switch (e.code) {
         case 'user-not-found':
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("User not found. Please check your email."),
           ));
           break;
         case 'wrong-password':
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Incorrect password. Please try again."),
           ));
           break;
         case 'invalid-email':
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Invalid email. Please try again."),
           ));
           break;
         default:
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("An unexpected error occurred. Please try again."),
           ));
           break;
@@ -216,7 +222,7 @@ class _LogInFormState extends State<LogInForm> {
       setState(() {
         isEmailPasswordLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Please try again."),
       ));
     }

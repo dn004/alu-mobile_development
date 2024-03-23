@@ -3,13 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+
 class AuthStateProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   bool _isSignedUp = true;
   bool _hasError = false;
 
   String? _errorCode;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   User? _currentUser;
@@ -31,9 +32,8 @@ class AuthStateProvider extends ChangeNotifier {
   String? get name => _name;
   String? get uid => _uid;
 
-  AuthStateProvider() {
-    checkAuthState();
-  }
+  AuthStateProvider({FirebaseAuth? firebaseAuth})
+      : _auth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<void> checkAuthState() async {
     try {
