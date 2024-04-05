@@ -103,7 +103,12 @@ class _MyHomePageState extends State<HomeScreen> {
               MaterialPageRoute(builder: (context) => const NewEntry()),
             );
           },
+
+          shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(100),
+    ),
           child: const Icon(Icons.add),
+         
         ),
       ),
     );

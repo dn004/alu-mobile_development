@@ -56,8 +56,9 @@ class NewEntry extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextFormField(
+      
                 controller: moodController,
-                decoration: InputDecoration(labelText: 'Mood'),
+                decoration: InputDecoration(labelText: 'Mood',border:OutlineInputBorder(borderSide: BorderSide(width: 1)) ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a mood';
@@ -65,15 +66,25 @@ class NewEntry extends StatelessWidget {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: MediaQuery.of(context).size.height/3.5),
               ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                      )),
+                  elevation: MaterialStateProperty.all(0),
+                  backgroundColor: MaterialStateProperty.all(Colors.grey),
+                  shadowColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.onSurface),
+                ),
                 onPressed: () async {
                   if (titleController.text.isEmpty ||
                       photoURLController.text.isEmpty ||
                       descriptionController.text.isEmpty ||
                       moodController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fill all fields')),
+                      const SnackBar(content: Text('Please fill all fields')),
                     );
                     return;
                   }
@@ -91,9 +102,7 @@ class NewEntry extends StatelessWidget {
                         'mood': moodController.text,
                         'date': Timestamp.now(),
                         'userID': user.uid,
-                      }).then((DocumentReference document) {
-                        print('Document ID: ${document.id}');
-                      });
+                      }).then((DocumentReference document) {});
                       titleController.clear();
                       photoURLController.clear();
                       descriptionController.clear();
@@ -101,22 +110,21 @@ class NewEntry extends StatelessWidget {
                       dateController.clear();
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Entry added successfully')),
+                        const SnackBar(
+                            content: Text('Entry added successfully')),
                       );
                     } catch (error) {
-                      print('Failed to add entry: $error');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to add entry')),
+                        const SnackBar(content: Text('Failed to add entry')),
                       );
                     }
                   } else {
-                    print('User is not logged in');
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('User is not logged in')),
+                      const SnackBar(content: Text('User is not logged in')),
                     );
                   }
                 },
-                child: Text('Done'),
+                child: const Icon(Icons.done_rounded),
               ),
             ],
           ),

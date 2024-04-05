@@ -5,7 +5,7 @@ import 'package:journalize/features/navigation/widgets/update_entry.dart';
 import 'package:journalize/utils/constants.dart';
 
 class Entries extends StatefulWidget {
-  const Entries({Key? key});
+  const Entries({super.key, Key? entriesKey});
 
   @override
   State<Entries> createState() => _EntriesState();
@@ -125,14 +125,14 @@ class _EntriesState extends State<Entries> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text("Options"),
+                        title: const Text("Options"),
                         content: SingleChildScrollView(
                           child: ListBody(
                             children: <Widget>[
                               ListTile(
                                 //UPDATING DATA FROM FIRESTORE
-                                leading: Icon(Icons.edit),
-                                title: Text('Edit Entry'),
+                                leading: const Icon(Icons.edit),
+                                title: const Text('Edit Entry'),
                                 onTap: () {
                                   Navigator.pop(context);
                                   Navigator.push(
@@ -165,45 +165,43 @@ class _EntriesState extends State<Entries> {
                     },
                   );
                 },
-                child: Container(
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.amber,
-                      ),
-                      width: MyConstants.screenWidth(context) / 2.3,
-                      height: MyConstants.screenHeight(context),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15),
-                              ),
-                              child: CustomImageWidget(
-                                imageUrl: entries[index]["photoURL"],
-                                fit: BoxFit.cover,
-                              ),
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.amber,
+                    ),
+                    width: MyConstants.screenWidth(context) / 2.3,
+                    height: MyConstants.screenHeight(context),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius:const BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                            child: CustomImageWidget(
+                              imageUrl: entries[index]["photoURL"],
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(15),
-                              ),
-                            ),
-                            width: MyConstants.screenWidth(context),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("${entries[index]["title"]}"),
+                        ),
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.black26,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15),
                             ),
                           ),
-                        ],
-                      ),
+                          width: MyConstants.screenWidth(context),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("${entries[index]["title"]}"),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -229,8 +227,8 @@ class CustomImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null || imageUrl!.isEmpty) {
-      print(imageUrl);
-      return Icon(Icons.error_outline_rounded);
+      print("no image");
+      return const Icon(Icons.error_outline_rounded);
     }
 
     return Image.network(
@@ -239,7 +237,7 @@ class CustomImageWidget extends StatelessWidget {
       errorBuilder:
           (BuildContext context, Object exception, StackTrace? stackTrace) {
         print(imageUrl);
-        return Icon(Icons.error_outline);
+        return const Icon(Icons.error_outline);
       },
     );
   }
